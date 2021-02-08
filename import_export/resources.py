@@ -426,7 +426,7 @@ class Resource(metaclass=DeclarativeMetaclass):
         if errors:
             raise ValidationError(errors)
 
-    def save_instance(self, instance, using_transactions=True, dry_run=False):
+    def save_instance(self, instance, using_transactions=True, dry_run=False, **kwargs):
         """
         Takes care of saving the object to the database.
 
@@ -444,7 +444,7 @@ class Resource(metaclass=DeclarativeMetaclass):
                 pass
             else:
                 instance.save()
-        self.after_save_instance(instance, using_transactions, dry_run)
+        self.after_save_instance(instance, using_transactions, dry_run, **kwargs)
 
     def before_save_instance(self, instance, using_transactions, dry_run):
         """
@@ -452,7 +452,7 @@ class Resource(metaclass=DeclarativeMetaclass):
         """
         pass
 
-    def after_save_instance(self, instance, using_transactions, dry_run):
+    def after_save_instance(self, instance, using_transactions, dry_run, **kwargs):
         """
         Override to add additional logic. Does nothing by default.
         """
@@ -665,7 +665,7 @@ class Resource(metaclass=DeclarativeMetaclass):
                     row_result.import_type = RowResult.IMPORT_TYPE_SKIP
                 else:
                     self.validate_instance(instance, import_validation_errors)
-                    self.save_instance(instance, using_transactions, dry_run)
+                    self.save_instance(instance, using_transactions, dry_run, **kwargs)
                     self.save_m2m(instance, row, using_transactions, dry_run)
                     # Add object info to RowResult for LogEntry
                     row_result.object_id = instance.pk
